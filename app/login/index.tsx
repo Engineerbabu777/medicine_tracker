@@ -1,9 +1,12 @@
 import Colors from "@/constant/Colors";
+import { useRouter } from "expo-router";
 import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
+  const router = useRouter();
+
   return (
     <SafeAreaView>
       <View>
@@ -45,12 +48,12 @@ export default function Index() {
           Track your control of your health.Stay consistent and healthy
         </Text>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/login/signIn")}>
           <Text
             style={{
               textAlign: "center",
               fontSize: 16,
-              color:Colors.PRIMARY
+              color: Colors.PRIMARY,
             }}
           >
             Continue
@@ -76,6 +79,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 99,
     padding: 15,
-    marginTop:25
+    marginTop: 25,
   },
 });
