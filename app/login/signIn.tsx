@@ -1,4 +1,5 @@
 import Colors from "@/constant/Colors";
+import { useRouter } from "expo-router";
 import React from "react";
 import {
   View,
@@ -10,6 +11,12 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SignIn() {
+  const router = useRouter();
+
+  const handleCreateAccount = () => {
+    router.push("/login/signup");
+  };
+
   return (
     <SafeAreaView>
       <View
@@ -57,7 +64,10 @@ export default function SignIn() {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.createButton}>
+        <TouchableOpacity
+          style={styles.createButton}
+          onPress={handleCreateAccount}
+        >
           <Text
             style={{
               textAlign: "center",
