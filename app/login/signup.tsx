@@ -7,14 +7,69 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/config/firebaseConfig";
+import { ToastAndroid, Platform } from "react-native";
 
 export default function SignUp() {
   const router = useRouter();
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [fullName, setFullName] = React.useState("");
 
   const handleAlreadyAccount = () => {
     router.push("/login/signIn");
+  };
+
+  const onCreateAccount = async () => {
+    if (!email || !password) {
+      Alert.alert("Please fill out all the fields");
+      return;
+    }
+
+    try {
+      console.log("Creating account!");
+
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      // Signed up successfully
+      console.log("Account created!");
+      console.log(userCredential.user);
+      // FOR ANDROID!
+      if (Platform.OS === "android") {
+        ToastAndroid.show(
+          "Account has been created successfully",
+          ToastAndroid.BOTTOM
+        );
+      } else {
+        // FOR IOS!
+        Alert.alert("Account has been created successfully");
+      }
+    } catch (error: any) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+
+      console.error({ errorCode, errorMessage });
+
+      if (errorCode === "auth/email-already-in-use") {
+        // FOR ANDROID!
+        if (Platform.OS === "android") {
+          ToastAndroid.show("Email already in use", ToastAndroid.BOTTOM);
+        } else {
+          // FOR IOS!
+          Alert.alert("Email already in use");
+        }
+      } else {
+        Alert.alert("Error creating account", errorMessage);
+      }
+    }
   };
 
   return (
@@ -34,7 +89,12 @@ export default function SignUp() {
           }}
         >
           <Text>Full Name</Text>
-          <TextInput placeholder="Full Name" style={styles.textInput} />
+          <TextInput
+            placeholder="Full Name"
+            style={styles.textInput}
+            value={fullName}
+            onChangeText={(text: string) => setFullName(text)}
+          />
         </View>
 
         <View
@@ -43,7 +103,12 @@ export default function SignUp() {
           }}
         >
           <Text>Email</Text>
-          <TextInput placeholder="Email" style={styles.textInput} />
+          <TextInput
+            placeholder="Email"
+            style={styles.textInput}
+            value={email}
+            onChangeText={(text: string) => setEmail(text)}
+          />
         </View>
 
         <View
@@ -56,10 +121,12 @@ export default function SignUp() {
             placeholder="Password"
             style={styles.textInput}
             secureTextEntry
+            value={password}
+            onChangeText={(text: string) => setPassword(text)}
           />
         </View>
 
-        <TouchableOpacity style={styles.loginButton}>
+        <TouchableOpacity style={styles.loginButton} onPress={onCreateAccount}>
           <Text
             style={{
               textAlign: "center",
