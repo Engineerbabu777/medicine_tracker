@@ -45,7 +45,7 @@ export default function SignIn() {
       }
 
       // Navigate to Home screen
-      router.push("/(tabs)");
+      router.replace("/(tabs)");
     } catch (error: any) {
       let errorMessage = error.message;
       if (errorMessage === "auth/invalid-credentials") {

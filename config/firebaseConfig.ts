@@ -1,7 +1,9 @@
 import { API_KEY } from "@/secrets";
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
+import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage import
 
+// Firebase config
 const firebaseConfig = {
   apiKey: API_KEY,
   authDomain: "medi-tracker-df8bc.firebaseapp.com",
@@ -11,6 +13,11 @@ const firebaseConfig = {
   appId: "1:558666705182:web:969b3f20355f27d084010f",
 };
 
-// Initialize Firebase
+// Initialize Firebase app
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+
+// Initialize Firebase Auth
+const auth = getAuth(app);
+
+
+export { auth };
