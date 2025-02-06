@@ -52,11 +52,13 @@ export default function SignUp() {
         // FOR IOS!
         Alert.alert("Account has been created successfully");
       }
+
+      router.push("/login/signIn");
     } catch (error: any) {
       const errorCode = error.code;
       const errorMessage = error.message;
 
-      console.error({ errorCode, errorMessage });
+      // console.error({ errorCode, errorMessage });
 
       if (errorCode === "auth/email-already-in-use") {
         // FOR ANDROID!

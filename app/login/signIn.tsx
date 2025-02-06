@@ -1,5 +1,7 @@
+import { auth } from "@/config/firebaseConfig";
 import Colors from "@/constant/Colors";
 import { useRouter } from "expo-router";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import React from "react";
 import {
   View,
@@ -7,14 +9,56 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  ToastAndroid,
+  Platform,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SignIn() {
   const router = useRouter();
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
 
   const handleCreateAccount = () => {
     router.push("/login/signup");
+  };
+
+  const onSignIn = async () => {
+    if (!email || !password) {
+      Alert.alert("Please fill out all the fields");
+      return;
+    }
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      // Show success message
+      if (Platform.OS === "android") {
+        ToastAndroid.show("Signed in successfully!", ToastAndroid.SHORT);
+      } else {
+        Alert.alert("Signed in success");
+      }
+
+      // Navigate to Home screen
+      router.push("/(tabs)");
+    } catch (error: any) {
+      let errorMessage = error.message;
+      if (errorMessage === "auth/invalid-credentials") {
+        errorMessage = "Invalid email or password";
+      }
+
+      // Show error message
+      if (Platform.OS === "android") {
+        ToastAndroid.show(errorMessage, ToastAndroid.LONG);
+      } else {
+        Alert.alert(errorMessage);
+      }
+    }
   };
 
   return (
@@ -36,7 +80,12 @@ export default function SignIn() {
           }}
         >
           <Text>Email</Text>
-          <TextInput placeholder="Email" style={styles.textInput} />
+          <TextInput
+            placeholder="Email"
+            style={styles.textInput}
+            value={email}
+            onChangeText={(value: string) => setEmail(value)}
+          />
         </View>
 
         <View
@@ -49,10 +98,12 @@ export default function SignIn() {
             placeholder="Password"
             style={styles.textInput}
             secureTextEntry
+            value={password}
+            onChangeText={(value: string) => setPassword(value)}
           />
         </View>
 
-        <TouchableOpacity style={styles.loginButton}>
+        <TouchableOpacity style={styles.loginButton} onPress={onSignIn}>
           <Text
             style={{
               textAlign: "center",
