@@ -1,5 +1,6 @@
 import { auth } from "@/config/firebaseConfig";
 import Colors from "@/constant/Colors";
+import { setLocalStorage } from "@/service/Storage";
 import { useRouter } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import React from "react";
@@ -43,6 +44,8 @@ export default function SignIn() {
       } else {
         Alert.alert("Signed in success");
       }
+
+      setLocalStorage("user", user)
 
       // Navigate to Home screen
       router.replace("/(tabs)");

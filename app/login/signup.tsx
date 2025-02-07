@@ -10,10 +10,15 @@ import {
   Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  User,
+} from "firebase/auth";
 import { auth } from "@/config/firebaseConfig";
 import { ToastAndroid, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setLocalStorage } from "@/service/Storage";
 
 export default function SignUp() {
   const router = useRouter();
@@ -39,22 +44,33 @@ export default function SignUp() {
         email,
         password
       );
+      const user: User | null = userCredential.user;
 
-      // Signed up successfully
-      console.log("Account created!");
-      console.log(userCredential.user);
-      // FOR ANDROID!
-      if (Platform.OS === "android") {
-        ToastAndroid.show(
-          "Account has been created successfully",
-          ToastAndroid.BOTTOM
-        );
-      } else {
-        // FOR IOS!
-        Alert.alert("Account has been created successfully");
+      if (user) {
+        console.log("Account created!");
+        console.log(user);
+
+        if (user.email === email) {
+          // UPDATE USER NAME!
+          await updateProfile(user, {
+            displayName: "Jane Q. User",
+          });
+          console.log("Profile updated!");
+        }
+
+        // Show success message
+        if (Platform.OS === "android") {
+          ToastAndroid.show(
+            "Account has been created successfully",
+            ToastAndroid.SHORT
+          );
+        } else {
+          Alert.alert("Account has been created successfully");
+        }
+        setLocalStorage("user", user);
+
+        router.push("/login/signIn");
       }
-
-      router.push("/login/signIn");
     } catch (error: any) {
       const errorCode = error.code;
       const errorMessage = error.message;

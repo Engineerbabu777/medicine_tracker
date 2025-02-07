@@ -5,26 +5,26 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "@/config/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { getLocalStorage, setLocalStorage } from "@/service/Storage";
 export default function TabLayout() {
   const router = useRouter();
   const [authenticated, setAuthenticated] = useState<null | boolean>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
-        const userFromLocalStorage = await AsyncStorage.getItem("user");
+        const userFromLocalStorage:any = getLocalStorage("user");
 
         if (userFromLocalStorage) {
           // If user data exists in local storage, set it
-          setUser(JSON.parse(userFromLocalStorage));
+          setUser(userFromLocalStorage);
           setAuthenticated(true);
         } else if (user) {
           // If Firebase user exists, save it to local storage and set state
           const uid = user.uid;
-          await AsyncStorage.setItem("user", JSON.stringify(user));
+          setLocalStorage("user", user);
           setUser(user);
           setAuthenticated(true);
         } else {
