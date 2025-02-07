@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Image } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colors from "@/constant/Colors";
+import EmptyState from "./EmptyState";
 export default function Header() {
   const [user, setUser] = useState<any>(null);
 
@@ -22,7 +23,14 @@ export default function Header() {
         marginTop: 20,
       }}
     >
-      <View style={{display:'flex',justifyContent:'space-between',flexDirection:'row',alignItems:'center'}}>
+      <View
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
         <View
           style={{
             display: "flex",
@@ -44,6 +52,8 @@ export default function Header() {
         </View>
         <Ionicons name="settings-outline" size={35} color={Colors.DARK_GRAY} />
       </View>
+
+      <EmptyState />
     </View>
   );
 }
