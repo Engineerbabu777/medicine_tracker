@@ -45,7 +45,7 @@ export default function SignIn() {
         Alert.alert("Signed in success");
       }
 
-      setLocalStorage("user", user)
+      await setLocalStorage("user", user)
 
       // Navigate to Home screen
       router.replace("/(tabs)");

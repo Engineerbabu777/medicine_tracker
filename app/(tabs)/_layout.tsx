@@ -15,7 +15,8 @@ export default function TabLayout() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
-        const userFromLocalStorage:any = getLocalStorage("user");
+        const userFromLocalStorage:any = await getLocalStorage("user");
+        console.log("from tab/:",{userFromLocalStorage})
 
         if (userFromLocalStorage) {
           // If user data exists in local storage, set it
@@ -24,7 +25,7 @@ export default function TabLayout() {
         } else if (user) {
           // If Firebase user exists, save it to local storage and set state
           const uid = user.uid;
-          setLocalStorage("user", user);
+          await setLocalStorage("user", user);
           setUser(user);
           setAuthenticated(true);
         } else {

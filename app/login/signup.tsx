@@ -53,7 +53,7 @@ export default function SignUp() {
         if (user.email === email) {
           // UPDATE USER NAME!
           await updateProfile(user, {
-            displayName: "Jane Q. User",
+            displayName: fullName ? fullName : email?.split('@')[0],
           });
           console.log("Profile updated!");
         }
@@ -67,7 +67,7 @@ export default function SignUp() {
         } else {
           Alert.alert("Account has been created successfully");
         }
-        setLocalStorage("user", user);
+        await setLocalStorage("user", user);
 
         router.push("/login/signIn");
       }
