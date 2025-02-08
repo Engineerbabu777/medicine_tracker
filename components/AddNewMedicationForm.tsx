@@ -1,9 +1,15 @@
-import React from "react";
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TextInput, FlatList } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colors from "@/constant/Colors";
+import { TypeList } from "../constant/Options";
 
 export default function AddNewMedicationForm() {
+  const [formData, setFormData] = useState({});
+
+  const handleOnInputChange = (field: string, value: string | number) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
   return (
     <View
       style={{
@@ -21,6 +27,24 @@ export default function AddNewMedicationForm() {
         />
         <TextInput placeholder="Medicine name" style={styles.input} />
       </View>
+
+      {/* TYpe Medicine! */}
+      <FlatList
+        style={{
+          marginTop: 10,
+        }}
+        data={TypeList}
+        horizontal={true}
+        // indicatorStyle="white"
+        showsHorizontalScrollIndicator={false}
+        renderItem={({ item, index }) => {
+          return (
+            <View style={[styles.medicineGroup, { marginRight: 10 }]}>
+              <Text style={{}}>{item?.name}</Text>
+            </View>
+          );
+        }}
+      />
     </View>
   );
 }
