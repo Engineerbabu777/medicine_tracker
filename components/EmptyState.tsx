@@ -1,8 +1,11 @@
 import Colors from "@/constant/Colors";
+import { useRouter } from "expo-router";
 import React from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 
 export default function EmptyState() {
+  const router = useRouter();
+
   return (
     <View
       style={{
@@ -47,6 +50,7 @@ export default function EmptyState() {
           borderRadius: 10,
           width: "100%",
         }}
+        onPress={() => router.push("/add-new-medication")}
       >
         <Text
           style={{
