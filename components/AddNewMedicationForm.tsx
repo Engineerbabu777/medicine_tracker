@@ -1,13 +1,26 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colors from "@/constant/Colors";
 import { TypeList } from "../constant/Options";
 
 export default function AddNewMedicationForm() {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    type: null,
+    name: "",
+  });
 
-  const handleOnInputChange = (field: string, value: string | number) => {
+  const handleOnInputChange = (
+    field: string,
+    value: string | number | Object
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
   return (
@@ -25,7 +38,11 @@ export default function AddNewMedicationForm() {
           size={24}
           color="black"
         />
-        <TextInput placeholder="Medicine name" style={styles.input} />
+        <TextInput
+          placeholder="Medicine name"
+          style={styles.input}
+          onChangeText={(text) => handleOnInputChange("name", text)}
+        />
       </View>
 
       {/* TYpe Medicine! */}
@@ -39,9 +56,28 @@ export default function AddNewMedicationForm() {
         showsHorizontalScrollIndicator={false}
         renderItem={({ item, index }) => {
           return (
-            <View style={[styles.medicineGroup, { marginRight: 10 }]}>
-              <Text style={{}}>{item?.name}</Text>
-            </View>
+            <TouchableOpacity
+              onPress={() => handleOnInputChange("type", item)}
+              style={[
+                styles.medicineGroup,
+                { marginRight: 10 },
+                {
+                  backgroundColor:
+                    formData.type === item ? Colors.PRIMARY : "white",
+                  borderColor: formData.type === item ? "white" : Colors.GRAY,
+                  borderRightWidth: formData.type === item ? 2 : 1,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  color: formData.type === item ? "white" : "black",
+                  fontWeight: formData.type === item ? "bold" : "normal",
+                }}
+              >
+                {item?.name}
+              </Text>
+            </TouchableOpacity>
           );
         }}
       />
