@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   Text,
@@ -6,30 +6,35 @@ import {
   TextInput,
   FlatList,
   TouchableOpacity,
+  Modal,
+  Platform,
+  TouchableWithoutFeedback,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colors from "@/constant/Colors";
-import { TypeList } from "../constant/Options";
+import { TypeList, WhenToTake } from "../constant/Options";
+import { Picker } from "@react-native-picker/picker";
 
 export default function AddNewMedicationForm() {
   const [formData, setFormData] = useState({
     type: null,
     name: "",
-    dose:""
+    dose: "",
   });
 
-  const handleOnInputChange = (
-    field: string,
-    value: string | number | Object
-  ) => {
+  const [showPickerModal, setShowPickerModal] = useState(false);
+
+  const handleOnInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+  const handlePickerValueChange = (itemValue) => {
+    handleOnInputChange("dose", itemValue);
+    setShowPickerModal(false);
+  };
+
   return (
-    <View
-      style={{
-        padding: 25,
-      }}
-    >
+    <View style={{ padding: 25 }}>
       <Text style={styles.header}>Add New Medication</Text>
 
       <View style={styles.medicineGroup}>
@@ -46,11 +51,9 @@ export default function AddNewMedicationForm() {
         />
       </View>
 
-      {/* TYpe Medicine! */}
+      {/* Type Medicine! */}
       <FlatList
-        style={{
-          marginTop: 5,
-        }}
+        style={{ marginTop: 5 }}
         data={TypeList}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
@@ -82,7 +85,7 @@ export default function AddNewMedicationForm() {
         }}
       />
 
-<View style={styles.medicineGroup}>
+      <View style={styles.medicineGroup}>
         <Ionicons
           style={styles.icon}
           name="eyedrop-outline"
@@ -95,11 +98,50 @@ export default function AddNewMedicationForm() {
           onChangeText={(text) => handleOnInputChange("dose", text)}
         />
       </View>
+
+      <View style={styles.medicineGroup}>
+        <Ionicons
+          style={styles.icon}
+          name="time-outline"
+          size={24}
+          color="black"
+        />
+        <TouchableOpacity
+          style={{ flex: 1 }}
+          onPress={() => setShowPickerModal(true)}
+        >
+          <Text style={styles.input}>
+            {formData.dose || "Select a time"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Picker Modal */}
+      <Modal
+        visible={showPickerModal}
+        transparent={true}
+        animationType="none"
+      >
+        <TouchableWithoutFeedback onPress={() => setShowPickerModal(false)}>
+          <View style={styles.modalOverlay} />
+        </TouchableWithoutFeedback>
+        <View style={styles.modalContent}>
+          <Picker
+            selectedValue={formData.dose}
+            onValueChange={handlePickerValueChange}
+            style={{ width: "100%" }}
+          >
+            {WhenToTake.map((item) => (
+              <Picker.Item label={item} value={item} key={item} />
+            ))}
+          </Picker>
+        </View>
+      </Modal>
     </View>
   );
 }
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   header: {
     fontWeight: "bold",
     fontSize: 25,
@@ -113,9 +155,8 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.LIGHT_GRAY_BORDER,
     marginTop: 10,
-    backgroundColor:'white'
+    backgroundColor: "white",
   },
-
   input: {
     fontSize: 16,
     marginLeft: 10,
@@ -126,5 +167,15 @@ export const styles = StyleSheet.create({
     borderRightWidth: 1,
     paddingRight: 10,
     borderColor: Colors.GRAY,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
 });
