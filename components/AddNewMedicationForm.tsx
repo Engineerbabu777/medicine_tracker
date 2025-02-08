@@ -15,6 +15,7 @@ export default function AddNewMedicationForm() {
   const [formData, setFormData] = useState({
     type: null,
     name: "",
+    dose:""
   });
 
   const handleOnInputChange = (
@@ -48,11 +49,10 @@ export default function AddNewMedicationForm() {
       {/* TYpe Medicine! */}
       <FlatList
         style={{
-          marginTop: 10,
+          marginTop: 5,
         }}
         data={TypeList}
         horizontal={true}
-        // indicatorStyle="white"
         showsHorizontalScrollIndicator={false}
         renderItem={({ item, index }) => {
           return (
@@ -81,6 +81,20 @@ export default function AddNewMedicationForm() {
           );
         }}
       />
+
+<View style={styles.medicineGroup}>
+        <Ionicons
+          style={styles.icon}
+          name="eyedrop-outline"
+          size={24}
+          color="black"
+        />
+        <TextInput
+          placeholder="Dose Ex. 2ml, 5ml"
+          style={styles.input}
+          onChangeText={(text) => handleOnInputChange("dose", text)}
+        />
+      </View>
     </View>
   );
 }
@@ -98,7 +112,8 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: Colors.LIGHT_GRAY_BORDER,
-    marginTop: 7,
+    marginTop: 10,
+    backgroundColor:'white'
   },
 
   input: {
