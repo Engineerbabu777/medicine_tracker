@@ -11,17 +11,19 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colors from "@/constant/Colors";
 import { TypeList, WhenToTake } from "../constant/Options";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { formatDateToText, formatTime } from "@/service/ConvertDateTime";
+import { formatDateToText, formatTime, getDatesRange } from "@/service/ConvertDateTime";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/config/firebaseConfig";
 import { getLocalStorage } from "@/service/Storage";
 import { User } from "firebase/auth";
+import { useRouter } from "expo-router";
 
 export default function AddNewMedicationForm() {
   const [formData, setFormData] = useState({
@@ -38,6 +40,9 @@ export default function AddNewMedicationForm() {
   const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
   const [openEndDatePicker, setOpenEndDatePicker] = useState(false);
   const [showRemainderTime, setShowRemainderTime] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
 
   const handleOnInputChange = (
     field: string,
@@ -83,6 +88,8 @@ export default function AddNewMedicationForm() {
         return;
       }
 
+      setLoading(true);
+
       // Create a document reference
       const medicationRef = doc(db, "medications", Date.now().toString());
 
@@ -90,6 +97,7 @@ export default function AddNewMedicationForm() {
       const userEmail = user?.email || null;
 
       console.log({ user });
+      const dates = getDatesRange(formData.startDate, formData.endDate);
 
       // Save medication details in the database
       await setDoc(medicationRef, {
@@ -101,6 +109,7 @@ export default function AddNewMedicationForm() {
         type: formData.type,
         whenToTake: formData.whenToTake,
         userEmail: userEmail,
+        dates:dates
       });
 
       // Reset the form
@@ -115,7 +124,9 @@ export default function AddNewMedicationForm() {
       });
 
       Alert.alert("Medication added successfully!");
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.error("Error adding medication:", error);
       Alert.alert(
         "An error occurred while adding medication. Please try again."
@@ -267,15 +278,19 @@ export default function AddNewMedicationForm() {
       </View>
 
       <TouchableOpacity style={styles.button} onPress={addNewMedication}>
-        <Text
-          style={{
-            fontSize: 17,
-            color: "white",
-            textAlign: "center",
-          }}
-        >
-          Add New Medication
-        </Text>
+        {!loading ? (
+          <Text
+            style={{
+              fontSize: 17,
+              color: "white",
+              textAlign: "center",
+            }}
+          >
+            Add Medication
+          </Text>
+        ) : (
+          <ActivityIndicator size={'large'} color={"white"} />
+        )}
       </TouchableOpacity>
 
       {/* Picker Modal */}

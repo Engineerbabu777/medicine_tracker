@@ -53,7 +53,6 @@ export default function Header() {
         <Ionicons name="settings-outline" size={35} color={Colors.DARK_GRAY} />
       </View>
 
-      <EmptyState />
     </View>
   );
 }

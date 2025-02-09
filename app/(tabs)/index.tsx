@@ -1,4 +1,6 @@
+import EmptyState from "@/components/EmptyState";
 import Header from "@/components/Header";
+import MedicationList from "@/components/MedicationList";
 import { auth } from "@/config/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect, useRouter } from "expo-router";
@@ -19,6 +21,12 @@ export default function Index() {
       <SafeAreaView>
         {/* HEADER! */}
         <Header />
+
+        {/* Empty state! */}
+        {false && <EmptyState />}
+
+        {/* list! */}
+        <MedicationList />
       </SafeAreaView>
     </View>
   );
