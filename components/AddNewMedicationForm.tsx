@@ -10,6 +10,7 @@ import {
   Platform,
   TouchableWithoutFeedback,
   ScrollView,
+  Alert,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colors from "@/constant/Colors";
@@ -17,6 +18,10 @@ import { TypeList, WhenToTake } from "../constant/Options";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { formatDateToText, formatTime } from "@/service/ConvertDateTime";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/config/firebaseConfig";
+import { getLocalStorage } from "@/service/Storage";
+import { User } from "firebase/auth";
 
 export default function AddNewMedicationForm() {
   const [formData, setFormData] = useState({
@@ -26,6 +31,7 @@ export default function AddNewMedicationForm() {
     startDate: null,
     endDate: null,
     remainderTime: null,
+    whenToTake: "",
   });
 
   const [showPickerModal, setShowPickerModal] = useState(false);
@@ -41,7 +47,7 @@ export default function AddNewMedicationForm() {
   };
 
   const handlePickerValueChange = (itemValue: string) => {
-    handleOnInputChange("dose", itemValue);
+    handleOnInputChange("whenToTake", itemValue);
     setShowPickerModal(false);
   };
 
@@ -59,6 +65,62 @@ export default function AddNewMedicationForm() {
 
   const closeEndDate = () => {
     setOpenEndDatePicker(false);
+  };
+
+  const addNewMedication = async () => {
+    try {
+      // Check if any field is empty
+      if (
+        !formData?.dose ||
+        !formData?.endDate ||
+        !formData?.startDate ||
+        !formData?.remainderTime ||
+        !formData?.name ||
+        !formData?.type ||
+        !formData?.whenToTake
+      ) {
+        Alert.alert("Please fill out all the fields");
+        return;
+      }
+
+      // Create a document reference
+      const medicationRef = doc(db, "medications", Date.now().toString());
+
+      const user: User | null = await getLocalStorage("user");
+      const userEmail = user?.email || null;
+
+      console.log({ user });
+
+      // Save medication details in the database
+      await setDoc(medicationRef, {
+        dose: formData.dose,
+        startDate: formatDateToText(formData.startDate),
+        endDate: formatDateToText(formData.endDate),
+        remainderTime: formData.remainderTime,
+        name: formData.name,
+        type: formData.type,
+        whenToTake: formData.whenToTake,
+        userEmail: userEmail,
+      });
+
+      // Reset the form
+      setFormData({
+        type: null,
+        name: "",
+        dose: "",
+        startDate: null,
+        endDate: null,
+        remainderTime: null,
+        whenToTake: "",
+      });
+
+      Alert.alert("Medication added successfully!");
+    } catch (error) {
+      console.error("Error adding medication:", error);
+      Alert.alert(
+        "An error occurred while adding medication. Please try again."
+      );
+    }
   };
 
   return (
@@ -138,7 +200,9 @@ export default function AddNewMedicationForm() {
           style={{ flex: 1 }}
           onPress={() => setShowPickerModal(true)}
         >
-          <Text style={styles.input}>{formData.dose || "Select a time"}</Text>
+          <Text style={styles.input}>
+            {formData?.whenToTake ? formData?.whenToTake : "When to take"}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -202,7 +266,7 @@ export default function AddNewMedicationForm() {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={addNewMedication}>
         <Text
           style={{
             fontSize: 17,
@@ -221,7 +285,7 @@ export default function AddNewMedicationForm() {
         </TouchableWithoutFeedback>
         <View style={styles.modalContent}>
           <Picker
-            selectedValue={formData.dose}
+            selectedValue={formData.whenToTake}
             onValueChange={handlePickerValueChange}
             style={{ width: "100%" }}
           >
