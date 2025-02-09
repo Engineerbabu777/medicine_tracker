@@ -6,6 +6,7 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "@/config/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getLocalStorage, setLocalStorage } from "@/service/Storage";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 export default function TabLayout() {
   const router = useRouter();
   const [authenticated, setAuthenticated] = useState<null | boolean>(null);
@@ -15,8 +16,8 @@ export default function TabLayout() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
-        const userFromLocalStorage:any = await getLocalStorage("user");
-        console.log("from tab/:",{userFromLocalStorage})
+        const userFromLocalStorage: any = await getLocalStorage("user");
+        console.log("from tab/:", { userFromLocalStorage });
 
         if (userFromLocalStorage) {
           // If user data exists in local storage, set it
@@ -80,16 +81,16 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="Profile"
+          name="history"
           options={{
-            tabBarLabel: "Add New",
+            tabBarLabel: "History",
             tabBarIcon: ({ color, size }) => (
-              <FontAwesome name="plus-square" size={size} color={color} />
+              <MaterialIcons name="history" size={size} color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name="AddNew"
+          name="Profile"
           options={{
             tabBarLabel: "Profile",
             tabBarIcon: ({ color, size }) => (

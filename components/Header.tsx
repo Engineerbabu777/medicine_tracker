@@ -17,6 +17,10 @@ export default function Header() {
   useEffect(() => {
     getUserDetails();
   }, []);
+
+  if(!user){
+    return null
+  }
   return (
     <View
       style={{

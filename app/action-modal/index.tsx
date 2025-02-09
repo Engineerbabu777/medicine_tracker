@@ -29,6 +29,7 @@ export default function ActionModalMedication() {
       console.error("Error updating medication:", error);
     }
   };
+
   const updateToMissed = async () => {
     try {
       const medicationId = medicine.id;
