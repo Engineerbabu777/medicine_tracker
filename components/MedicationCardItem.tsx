@@ -7,7 +7,6 @@ type Props = {
 };
 
 export default function MedicationCardItem({ medicine }: Props) {
-  console.log({ medicine });
   return (
     <View style={styles.container} key={medicine.id}>
       <View style={styles.subContainer}>
@@ -43,7 +42,7 @@ export default function MedicationCardItem({ medicine }: Props) {
     </View>
   );
 }
-``
+``;
 const styles = StyleSheet.create({
   imageContainer: {
     padding: 10,

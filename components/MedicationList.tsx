@@ -20,6 +20,7 @@ import {
   FlatList,
   StyleSheet,
   Pressable,
+  ActivityIndicator,
 } from "react-native";
 import MedicationCardItem from "./MedicationCardItem";
 
@@ -29,6 +30,7 @@ export default function MedicationList() {
   const [selectedDate, setSelectedDate] = useState<any>(
     moment().format("MM/DD/YYYY")
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   const getDateRangeList = () => {
     const dates = getDateRangesToDisplay();
@@ -38,7 +40,7 @@ export default function MedicationList() {
 
   const getMedicationList = async (date: any) => {
     const user: User | null = await getLocalStorage("user");
-
+    setIsLoading(true);
     const medicationRef = collection(db, "medications");
     const q = await query(
       medicationRef,
@@ -51,6 +53,8 @@ export default function MedicationList() {
       id: doc.id,
       ...doc.data(),
     }));
+
+    setIsLoading(false);
 
     setMedicationList(medications);
   };
@@ -129,10 +133,23 @@ export default function MedicationList() {
           )}
         />
 
-        <FlatList
-          data={medicationList}
-          renderItem={({ item }) => <MedicationCardItem medicine={item} />}
-        />
+        {!isLoading ? (
+          <FlatList
+            data={medicationList}
+            renderItem={({ item }) => <MedicationCardItem medicine={item} />}
+          />
+        ) : (
+          <View
+            style={{
+              flex: 1,
+              height: 200,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <ActivityIndicator size={"large"} color={Colors.PRIMARY} />
+          </View>
+        )}
       </View>
     </ScrollView>
   );
