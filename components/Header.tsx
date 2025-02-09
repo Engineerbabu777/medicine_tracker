@@ -1,12 +1,12 @@
 import { getLocalStorage, removeLocalStorage } from "@/service/Storage";
 import React, { useEffect, useState } from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, Pressable } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colors from "@/constant/Colors";
-import EmptyState from "./EmptyState";
+import { useRouter } from "expo-router";
 export default function Header() {
   const [user, setUser] = useState<any>(null);
-
+  const router = useRouter();
   const getUserDetails = async () => {
     const user = await getLocalStorage("user");
     console.log("from header/:", { user });
@@ -21,6 +21,7 @@ export default function Header() {
     <View
       style={{
         marginTop: 20,
+        marginBottom: 5,
       }}
     >
       <View
@@ -50,9 +51,10 @@ export default function Header() {
             {user?.displayName || "User"} 👋
           </Text>
         </View>
-        <Ionicons name="settings-outline" size={35} color={Colors.DARK_GRAY} />
+        <Pressable onPress={() => router.push("/add-new-medication")}>
+          <Ionicons name="medkit-outline" size={35} color={Colors.DARK_GRAY} />
+        </Pressable>
       </View>
-
     </View>
   );
 }

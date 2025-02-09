@@ -6,7 +6,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect, useRouter } from "expo-router";
 import { signOut } from "firebase/auth";
 import React from "react";
-import { View, Text, Button, Pressable, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Button,
+  Pressable,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
@@ -21,9 +28,6 @@ export default function Index() {
       <SafeAreaView>
         {/* HEADER! */}
         <Header />
-
-        {/* Empty state! */}
-        {false && <EmptyState />}
 
         {/* list! */}
         <MedicationList />

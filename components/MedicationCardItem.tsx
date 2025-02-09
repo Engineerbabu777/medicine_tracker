@@ -21,7 +21,7 @@ export default function MedicationCardItem({ medicine }: Props) {
             {medicine.name}
           </Text>
           <Text style={{ fontSize: 17 }}>{medicine.whenToTake}</Text>
-          <Text style={{ color: "white" }}>
+          <Text style={{ color: Colors.GRAY }}>
             {medicine.dose} {medicine.type.name}
           </Text>
         </View>

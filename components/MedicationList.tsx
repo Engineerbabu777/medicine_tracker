@@ -23,6 +23,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import MedicationCardItem from "./MedicationCardItem";
+import EmptyState from "./EmptyState";
 
 export default function MedicationList() {
   const [medicationList, setMedicationList] = useState<any>([]);
@@ -69,90 +70,79 @@ export default function MedicationList() {
   }, []);
 
   return (
-    <ScrollView
-      style={{
-        marginTop: 25,
-      }}
-    >
-      <View>
-        <Image
-          source={require("../assets/images/medication.jpeg")}
-          style={{
-            width: "100%",
-            height: 200,
-            borderRadius: 10,
-          }}
-        />
-      </View>
-
-      <View
-        style={{
-          marginTop: 20,
-        }}
-      >
-        <FlatList
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          data={dateRangeList}
-          renderItem={({ item, index }: { item: any; index: number }) => (
-            <Pressable
-              style={[
-                styles.dateGroup,
-                {
-                  backgroundColor:
-                    item.formattedDate === selectedDate
-                      ? Colors.PRIMARY
-                      : Colors.LIGHT_GRAY_BORDER,
-                },
-              ]}
-              onPress={() => setSelectedDate(item?.formattedDate)}
-            >
-              <Text
-                style={[
-                  styles.day,
-                  {
-                    color:
-                      item.formattedDate === selectedDate ? "white" : "black",
-                  },
-                ]}
-              >
-                {item?.day}
-              </Text>
-              <Text
-                style={[
-                  styles.date,
-                  {
-                    color:
-                      item.formattedDate === selectedDate ? "white" : "black",
-                  },
-                ]}
-              >
-                {item?.date}
-              </Text>
-            </Pressable>
-          )}
-        />
-
-        {!isLoading ? (
-          <FlatList
-            data={medicationList}
-            renderItem={({ item }) => <MedicationCardItem medicine={item} />}
-          />
-        ) : (
-          <View
+    <FlatList
+    showsVerticalScrollIndicator={false}
+      ListHeaderComponent={
+        <View style={{marginTop:20}}>
+          <Image
+            source={require("../assets/images/medication.jpeg")}
             style={{
-              flex: 1,
+              width: "100%",
               height: 200,
-              justifyContent: "center",
-              alignItems: "center",
+              borderRadius: 10,
             }}
-          >
-            <ActivityIndicator size={"large"} color={Colors.PRIMARY} />
+          />
+  
+          <View style={{ marginTop: 20 }}>
+            <FlatList
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              data={dateRangeList}
+              keyExtractor={(item, index) => `date-${index}`}
+              renderItem={({ item }) => (
+                <Pressable
+                  style={[
+                    styles.dateGroup,
+                    {
+                      backgroundColor:
+                        item.formattedDate === selectedDate
+                          ? Colors.PRIMARY
+                          : Colors.LIGHT_GRAY_BORDER,
+                    },
+                  ]}
+                  onPress={() => setSelectedDate(item?.formattedDate)}
+                >
+                  <Text
+                    style={[
+                      styles.day,
+                      {
+                        color:
+                          item.formattedDate === selectedDate ? "white" : "black",
+                      },
+                    ]}
+                  >
+                    {item?.day}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.date,
+                      {
+                        color:
+                          item.formattedDate === selectedDate ? "white" : "black",
+                      },
+                    ]}
+                  >
+                    {item?.date}
+                  </Text>
+                </Pressable>
+              )}
+            />
           </View>
-        )}
-      </View>
-    </ScrollView>
+        </View>
+      }
+      data={medicationList}
+      keyExtractor={(item, index) => `med-${index}`}
+      renderItem={({ item }) => <MedicationCardItem medicine={item} />}
+      ListEmptyComponent={isLoading ? (
+        <View style={{ flex: 1, height: 200, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size={"large"} color={Colors.PRIMARY} />
+        </View>
+      ) : (
+        <EmptyState />
+      )}
+    />
   );
+  
 }
 
 const styles = StyleSheet.create({

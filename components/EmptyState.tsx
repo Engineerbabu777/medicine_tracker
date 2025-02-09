@@ -12,6 +12,7 @@ export default function EmptyState() {
         marginTop: 80,
         display: "flex",
         alignItems: "center",
+        marginBottom:80
       }}
     >
       <Image
