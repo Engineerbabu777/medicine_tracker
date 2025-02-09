@@ -52,7 +52,7 @@ export default function Header() {
           </Text>
         </View>
         <Pressable onPress={() => router.push("/add-new-medication")}>
-          <Ionicons name="medkit-outline" size={35} color={Colors.DARK_GRAY} />
+          <Ionicons name="medkit-outline" size={35} color={Colors.PRIMARY} />
         </Pressable>
       </View>
     </View>
