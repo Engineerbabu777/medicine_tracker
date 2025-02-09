@@ -14,23 +14,48 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Colors from "@/constant/Colors";
 import { TypeList, WhenToTake } from "../constant/Options";
 import { Picker } from "@react-native-picker/picker";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { formatDateToText } from "@/service/ConvertDateTime";
 
 export default function AddNewMedicationForm() {
   const [formData, setFormData] = useState({
     type: null,
     name: "",
     dose: "",
+    startDate: null,
+    endDate: null,
   });
 
   const [showPickerModal, setShowPickerModal] = useState(false);
+  const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
+  const [openEndDatePicker, setOpenEndDatePicker] = useState(false);
 
-  const handleOnInputChange = (field, value) => {
+  const handleOnInputChange = (
+    field: string,
+    value: string | number | Date | Object
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handlePickerValueChange = (itemValue) => {
+  const handlePickerValueChange = (itemValue: string) => {
     handleOnInputChange("dose", itemValue);
     setShowPickerModal(false);
+  };
+
+  const showStartDate = () => {
+    setOpenStartDatePicker(true);
+  };
+
+  const closeStartDate = () => {
+    setOpenStartDatePicker(false);
+  };
+
+  const showEndDate = () => {
+    setOpenEndDatePicker(true);
+  };
+
+  const closeEndDate = () => {
+    setOpenEndDatePicker(false);
   };
 
   return (
@@ -110,18 +135,53 @@ export default function AddNewMedicationForm() {
           style={{ flex: 1 }}
           onPress={() => setShowPickerModal(true)}
         >
-          <Text style={styles.input}>
-            {formData.dose || "Select a time"}
-          </Text>
+          <Text style={styles.input}>{formData.dose || "Select a time"}</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Picker Modal */}
-      <Modal
-        visible={showPickerModal}
-        transparent={true}
-        animationType="none"
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          gap: 10,
+        }}
       >
+        <View style={[styles.medicineGroup, { flex: 1 }]}>
+          <Ionicons
+            style={styles.icon}
+            name="calendar-outline"
+            size={24}
+            color="black"
+          />
+
+          <TouchableOpacity onPress={() => setOpenStartDatePicker(true)}>
+            <Text style={styles.text}>
+              {formData?.startDate
+                ? formatDateToText(formData?.startDate)
+                : "start date"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={[styles.medicineGroup, { flex: 1 }]}>
+          <Ionicons
+            style={styles.icon}
+            name="calendar-outline"
+            size={24}
+            color="black"
+          />
+          <TouchableOpacity onPress={() => setOpenEndDatePicker(true)}>
+            <Text style={styles.text}>
+              {formData?.endDate
+                ? formatDateToText(formData?.endDate)
+                : "End date"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Picker Modal */}
+      <Modal visible={showPickerModal} transparent={true} animationType="none">
         <TouchableWithoutFeedback onPress={() => setShowPickerModal(false)}>
           <View style={styles.modalOverlay} />
         </TouchableWithoutFeedback>
@@ -137,6 +197,30 @@ export default function AddNewMedicationForm() {
           </Picker>
         </View>
       </Modal>
+
+      {/*  start date modal! */}
+      <DateTimePickerModal
+        isVisible={openStartDatePicker}
+        mode="date"
+        minimumDate={new Date()}
+        onConfirm={(date: any) => {
+          console.log({ date });
+          handleOnInputChange("startDate", date);
+          setOpenStartDatePicker(false);
+        }}
+        onCancel={closeStartDate}
+      />
+      {/* end date modal! */}
+      <DateTimePickerModal
+        minimumDate={new Date()}
+        isVisible={openEndDatePicker}
+        mode="date"
+        onConfirm={(date: any) => {
+          handleOnInputChange("endDate", date);
+          setOpenEndDatePicker(false);
+        }}
+        onCancel={closeEndDate}
+      />
     </View>
   );
 }
@@ -177,5 +261,9 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+  },
+  text: {
+    fontSize: 15,
+    padding: 5,
   },
 });
