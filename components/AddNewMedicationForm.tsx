@@ -9,13 +9,14 @@ import {
   Modal,
   Platform,
   TouchableWithoutFeedback,
+  ScrollView,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colors from "@/constant/Colors";
 import { TypeList, WhenToTake } from "../constant/Options";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { formatDateToText } from "@/service/ConvertDateTime";
+import { formatDateToText, formatTime } from "@/service/ConvertDateTime";
 
 export default function AddNewMedicationForm() {
   const [formData, setFormData] = useState({
@@ -24,11 +25,13 @@ export default function AddNewMedicationForm() {
     dose: "",
     startDate: null,
     endDate: null,
+    remainderTime: null,
   });
 
   const [showPickerModal, setShowPickerModal] = useState(false);
   const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
   const [openEndDatePicker, setOpenEndDatePicker] = useState(false);
+  const [showRemainderTime, setShowRemainderTime] = useState(false);
 
   const handleOnInputChange = (
     field: string,
@@ -158,7 +161,7 @@ export default function AddNewMedicationForm() {
             <Text style={styles.text}>
               {formData?.startDate
                 ? formatDateToText(formData?.startDate)
-                : "start date"}
+                : "Start date"}
             </Text>
           </TouchableOpacity>
         </View>
@@ -179,6 +182,37 @@ export default function AddNewMedicationForm() {
           </TouchableOpacity>
         </View>
       </View>
+
+      <View style={styles.medicineGroup}>
+        <Ionicons
+          style={styles.icon}
+          name="timer-outline"
+          size={24}
+          color="black"
+        />
+        <TouchableOpacity
+          style={{ flex: 1 }}
+          onPress={() => setShowRemainderTime(true)}
+        >
+          <Text style={styles.input}>
+            {formData?.remainderTime
+              ? formData?.remainderTime
+              : "Select a remainder time"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity style={styles.button}>
+        <Text
+          style={{
+            fontSize: 17,
+            color: "white",
+            textAlign: "center",
+          }}
+        >
+          Add New Medication
+        </Text>
+      </TouchableOpacity>
 
       {/* Picker Modal */}
       <Modal visible={showPickerModal} transparent={true} animationType="none">
@@ -220,6 +254,18 @@ export default function AddNewMedicationForm() {
           setOpenEndDatePicker(false);
         }}
         onCancel={closeEndDate}
+      />
+      {/* remainder time! */}
+      <DateTimePickerModal
+        isVisible={showRemainderTime}
+        mode="time"
+        onConfirm={(time: any) => {
+          handleOnInputChange("remainderTime", formatTime(time));
+          setShowRemainderTime(false);
+        }}
+        onCancel={() => {
+          setShowRemainderTime(false);
+        }}
       />
     </View>
   );
@@ -265,5 +311,12 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 15,
     padding: 5,
+  },
+  button: {
+    padding: 15,
+    backgroundColor: Colors.PRIMARY,
+    borderRadius: 15,
+    width: "100%",
+    marginTop: 25,
   },
 });
