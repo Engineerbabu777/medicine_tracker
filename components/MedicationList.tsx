@@ -24,6 +24,7 @@ import {
 } from "react-native";
 import MedicationCardItem from "./MedicationCardItem";
 import EmptyState from "./EmptyState";
+import { useRouter } from "expo-router";
 
 export default function MedicationList() {
   const [medicationList, setMedicationList] = useState<any>([]);
@@ -32,6 +33,7 @@ export default function MedicationList() {
     moment().format("MM/DD/YYYY")
   );
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const getDateRangeList = () => {
     const dates = getDateRangesToDisplay();
@@ -40,6 +42,7 @@ export default function MedicationList() {
   };
 
   const getMedicationList = async (date: any) => {
+    setMedicationList([]);
     const user: User | null = await getLocalStorage("user");
     setIsLoading(true);
     const medicationRef = collection(db, "medications");
@@ -71,9 +74,9 @@ export default function MedicationList() {
 
   return (
     <FlatList
-    showsVerticalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
       ListHeaderComponent={
-        <View style={{marginTop:20}}>
+        <View style={{ marginTop: 20 }}>
           <Image
             source={require("../assets/images/medication.jpeg")}
             style={{
@@ -82,7 +85,7 @@ export default function MedicationList() {
               borderRadius: 10,
             }}
           />
-  
+
           <View style={{ marginTop: 20 }}>
             <FlatList
               horizontal
@@ -107,7 +110,9 @@ export default function MedicationList() {
                       styles.day,
                       {
                         color:
-                          item.formattedDate === selectedDate ? "white" : "black",
+                          item.formattedDate === selectedDate
+                            ? "white"
+                            : "black",
                       },
                     ]}
                   >
@@ -118,7 +123,9 @@ export default function MedicationList() {
                       styles.date,
                       {
                         color:
-                          item.formattedDate === selectedDate ? "white" : "black",
+                          item.formattedDate === selectedDate
+                            ? "white"
+                            : "black",
                       },
                     ]}
                   >
@@ -132,17 +139,36 @@ export default function MedicationList() {
       }
       data={medicationList}
       keyExtractor={(item, index) => `med-${index}`}
-      renderItem={({ item }) => <MedicationCardItem medicine={item} />}
-      ListEmptyComponent={isLoading ? (
-        <View style={{ flex: 1, height: 200, justifyContent: "center", alignItems: "center" }}>
-          <ActivityIndicator size={"large"} color={Colors.PRIMARY} />
-        </View>
-      ) : (
-        <EmptyState />
+      renderItem={({ item }) => (
+        <Pressable
+          onPress={() => {
+            router.push({
+              pathname: "/action-modal",
+              params: { ...item, selectedDate: selectedDate },
+            });
+          }}
+        >
+          <MedicationCardItem medicine={item} selectedDate={selectedDate} />
+        </Pressable>
       )}
+      ListEmptyComponent={
+        isLoading ? (
+          <View
+            style={{
+              flex: 1,
+              height: 200,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <ActivityIndicator size={"large"} color={Colors.PRIMARY} />
+          </View>
+        ) : (
+          <EmptyState />
+        )
+      }
     />
   );
-  
 }
 
 const styles = StyleSheet.create({

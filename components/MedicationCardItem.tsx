@@ -4,9 +4,21 @@ import { View, Text, Image, StyleSheet } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 type Props = {
   medicine: any;
+  selectedDate?: string;
 };
 
-export default function MedicationCardItem({ medicine }: Props) {
+export default function MedicationCardItem({
+  medicine,
+  selectedDate = "",
+}: Props) {
+
+  const isTaken =
+  medicine?.action && Array.isArray(medicine.action) && selectedDate
+    ? medicine?.action.find((action: any) => action?.date === selectedDate)
+        ?.type || "not_taken"
+    : "not_taken"; 
+
+
   return (
     <View style={styles.container} key={medicine.id}>
       <View style={styles.subContainer}>
@@ -38,6 +50,31 @@ export default function MedicationCardItem({ medicine }: Props) {
         <Text style={{ fontWeight: "bold", fontSize: 20 }}>
           {medicine?.remainderTime}
         </Text>
+      </View>
+      <View
+        style={{
+          position: "absolute",
+          top: 5,
+          padding: 7,
+        }}
+      >
+        <Ionicons
+          name={
+            isTaken === "taken"
+              ? "checkmark-circle"
+              : isTaken === "missed"
+              ? "close-circle"
+              : "ellipse-outline"
+          }
+          size={24}
+          color={
+            isTaken === "taken"
+              ? "green"
+              : isTaken === "missed"
+              ? "red"
+              : "gray"
+          }
+        />
       </View>
     </View>
   );
